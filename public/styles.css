@@ -129,7 +129,10 @@ text-align: center;
 background-color: #80bfa88a;
 
 }
-            
+    
+.running {
+  background-color: red;
+}
     
     
     
