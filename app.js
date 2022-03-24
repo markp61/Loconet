@@ -112,8 +112,12 @@ io.on('connection', (socket) => {
     buffer[2] = locoSpeed;
     buffer[3] = 0x00; //checksum
     //checksum
-    chk(buffer);
-    console.log("OFF WE GO ....  " + buffer.toString('hex'));
+    chk(buffer);  
+    //Update Speed in Array
+    locoList[objIndex].speed =  locoSpeed;
+    console.log("OFF WE GO ....  " + buffer.toString('hex') +"..." + locoList[objIndex].speed );
+    //send array back to browser
+    io.emit('locoList Array', locoList);
 
   });
 });
@@ -216,6 +220,7 @@ function wait(milleseconds) {
               console.log(buffer);
               console.log(locoList);
               io.emit('locoList Array', locoList);
+              
           }
     }
   });
