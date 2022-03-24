@@ -8,6 +8,7 @@
    <button id="lightOn">Turn Light On</button>
    <button id="lightOff">Turn Light Off</button>
    <button id="powerOn">Turn Power On</button>
+   <button id="autoOne">Auto One</button>
 
  
   
@@ -176,11 +177,23 @@ $.each(data, function(i, v) {
 })
 
 
- 
+      $("#autoOne").on('click', function(){
+            
+            direction = 0;
+            loco = "loco" + 94;
+            console.log(direction + loco);
+            
+            socket.emit('autoOne', { "direction":direction, "loco":loco  });
+        });
 
 
         $(".dirButton").on('click', function(){
             $(this).closest('th').find('.dirButton').toggleClass('pressed');
+            direction = $(this).val();
+            loco = $(this).attr('id').slice(0,-3);
+            console.log(direction + loco);
+            
+            socket.emit('dirCmd', { "direction":direction, "loco":loco  });
         });
 
         $('.speedSlider').on('input', function() {

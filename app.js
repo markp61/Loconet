@@ -8,17 +8,18 @@ const io = new Server(server);
 
   //Locos Array
   let locoList = [
-    {id: 0, loco: "Class 108", address: 08, slot: 0, direction: 0, speed: 0, ready: 0,browserName: "loco08"},
-    {id: 1, loco: "Class 108 Passengers", address: 09, slot: 0, direction: 0, speed: 0, ready: 0,browserName: "loco09"},
-    {id: 2, loco: "Class 415", address: 03, slot: 0, direction: 0, speed: 0, ready: 0,browserName: "loco03"},
-    {id: 3, loco: "Class 50", address: 50, slot: 0 , direction: 0, speed: 0, ready: 0,browserName: "loco50"},
-    {id: 4, loco: "Class 121", address: 21, slot: 0, direction: 0, speed: 0, ready: 0,browserName: "loco21"},
-    {id: 5, loco: "GWR", address: 94, slot: 0, direction: 0, speed: 0, ready: 0,browserName: "loco94"},
+    {id: 0, loco: "Class 108", address: 08, slot: 0, direction: 0, speed: 0,  block: 0, ready: 0,browserName: "loco08"},
+    {id: 1, loco: "Class 108 Passengers", address: 09, slot: 0, direction: 0, speed: 0, block: 0, ready: 0,browserName: "loco09"},
+    {id: 2, loco: "Class 415", address: 03, slot: 0, direction: 0, speed: 0,  block: 0, ready: 0,browserName: "loco03"},
+    {id: 3, loco: "Class 50", address: 50, slot: 0 , direction: 0, speed: 0,  block: 0, ready: 0,browserName: "loco50"},
+    {id: 4, loco: "Class 121", address: 21, slot: 0, direction: 0, speed: 0,  block: 0, ready: 0,browserName: "loco21"},
+    {id: 5, loco: "GWR", address: 94, slot: 0, direction: 0, speed: 0, block: 0 ,ready: 0,browserName: "loco94"},
   ]
 //
 
 //Arduino Port Setup
-const { SerialPort } = require('serialport')
+const { SerialPort } = require('serialport');
+const { Console } = require('console');
 const port = new SerialPort({ path: '/dev/cu.usbmodem144201', baudRate: 9600 })
 
 // Open errors will be emitted as an error event
@@ -90,7 +91,9 @@ io.on('connection', (socket) => {
  
 });
 
-
+//Global Variables
+var thisBlock;
+var thisBlockState;
 
 // io is the browser
 // socl
@@ -118,6 +121,59 @@ io.on('connection', (socket) => {
     console.log("OFF WE GO ....  " + buffer.toString('hex') +"..." + locoList[objIndex].speed );
     //send array back to browser
     io.emit('locoList Array', locoList);
+    loconet.write( buffer );
+
+  });
+  socket.on('dirCmd', (data) => {
+    console.log('Loco : '+data.loco + ' / Direction : ' + data.direction);
+            
+            //Find index of specific loco using findIndex method.    
+            objIndex = locoList.findIndex((obj => obj.browserName ==  data.loco));
+            //get slot
+            console.log("LOCO IS " + data.loco + " IS " + objIndex);
+            var locoSlot = locoList[objIndex].slot;
+            var locoDirection = data.direction.toString(16);
+
+    var buffer = new Buffer.alloc(4);
+    buffer[0] = 0xA1;
+    buffer[1] = locoSlot;
+    buffer[2] = locoDirection;
+    buffer[3] = 0x00; //checksum
+    //checksum
+    chk(buffer);  
+    //Update Speed in Array
+    locoList[objIndex].direction =  locoDirection;
+    console.log("Swapping Direction ....  " + buffer.toString('hex') +"..." + locoList[objIndex].direction );
+    //send array back to browser
+    io.emit('locoList Array', locoList);
+    loconet.write( buffer );
+
+  });
+  //Automation test
+  socket.on('autoOne', (data) => {
+    var autonOneRunning =1;
+    console.log('Loco : '+data.loco + ' / Direction : ' + data.direction);
+            
+    //Find index of specific loco using findIndex method.    
+    objIndex = locoList.findIndex((obj => obj.browserName ==  data.loco));
+    //get slot
+    console.log("LOCO IS " + data.loco + " IS " + objIndex);
+    var locoSlot = locoList[objIndex].slot;
+    var locoDirection = data.direction.toString(16);
+
+    var buffer = new Buffer.alloc(4);
+    buffer[0] = 0xA0;
+    buffer[1] = locoSlot;
+    buffer[2] = 0x20;
+    buffer[3] = 0x00; //checksum
+    //checksum
+    chk(buffer);  
+    loconet.write( buffer );
+
+
+   
+    
+
 
   });
 });
@@ -148,6 +204,8 @@ io.on('connection', function(socket) {
   console.log("Track Power On");
   loconet.write( buffer );
 
+
+
   async function send(groups) {
       for(const val of locoList) {
         var locoHex =  '0x'+(val.address).toString(16);
@@ -177,7 +235,8 @@ function wait(milleseconds) {
     console.log("Recd :");
     console.log(data);
     var hexCode = data.toString('hex');
-    
+
+    //Loco Infor
     if(hexCode.startsWith("e7"))
     {
         var thisSlot = hexCode.substring(4, 6);
@@ -198,13 +257,13 @@ function wait(milleseconds) {
               var buffer = new Buffer.alloc(4);
               buffer[0] = 0xA1;
               buffer[1] = thisSlot;
-              buffer[2] = 0x32; //direction
+              buffer[2] = 0x00 //direction
               buffer[3] = 0x00; //checksum
               //checksum
               chk(buffer);
               //console.log("DIRECTION " + buffer.toString('hex'));
               loconet.write( buffer );
-              locoList[objIndex].direction = 32;
+              locoList[objIndex].direction = 0;
 
               //set Speed
               var buffer = new Buffer.alloc(4);
@@ -222,6 +281,49 @@ function wait(milleseconds) {
               io.emit('locoList Array', locoList);
               
           }
+    }
+    //Sensors
+    if(hexCode.startsWith("b2"))
+    {
+      console.log("SENSOR HIT")
+      var blockHex = hexCode.substring(2, 6);
+      //Update Block in Array
+     
+
+      switch(blockHex) {
+        case "0040":
+          thisBlock = 1;
+          thisBlockState = 'Low'
+          break;
+        case "0050":
+          thisBlock = 1;
+          thisBlockState = 'High'
+          break;
+        case "0060":
+          thisBlock = 2;
+          thisBlockState = 'Low'
+          break;
+        case "0070":
+          thisBlock = 2;
+          thisBlockState = 'High'
+          break;
+        case "0140":
+          thisBlock = 3;
+          thisBlockState = 'Low'
+          break;
+        case "0150":
+          thisBlock = 3;
+          thisBlockState = 'High'
+          break;
+      }
+      console.log("Block " + thisBlock + " blockState " + thisBlockState)
+      if(thisBlockState === "High")
+      {
+        objIndex = locoList.findIndex((obj => obj.address ==  94));
+        locoList[objIndex].block = thisBlock;
+        //send array back to browser
+        io.emit('locoList Array', locoList);
+      }
     }
   });
 
