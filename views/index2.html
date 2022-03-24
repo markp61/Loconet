@@ -1,0 +1,299 @@
+<!doctype html>
+<style>
+
+body {
+  color: blue;
+}
+p {
+    color: rgb(10, 10, 10);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+}
+
+
+input[type=range][orient=vertical]
+{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* Chromium */
+    width: 8px;
+    height: 175px;
+    padding: 0 5px;
+}
+
+.dirButton {
+                background-color: blue;
+
+            }
+
+            .dirButton.pressed {
+                background-color: red;
+            }
+
+            #mytable td {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        text-align: center;
+        background-color: #80bfa88a;
+        color: white;
+        }
+        #mytable th {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        text-align: center;
+        background-color: #80bfa88a;
+        color: white;
+        }
+        
+
+
+
+    .linkBtn {
+	box-shadow:inset 0px 1px 0px 0px #f7c5c0;
+	background:linear-gradient(to bottom, #83fcb1 5%, #63f51f 100%);
+	background-color:#69f365;
+	border-radius:6px;
+	border:1px solid #1fc02d;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:24px 24px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #b23e35;
+}
+.linkBtn.pressed {
+    box-shadow:inset 0px 1px 0px 0px #f7c5c0;
+	background:linear-gradient(to bottom, #fc8d83 5%, #e4685d 100%);
+	background-color:#fc8d83;
+	border-radius:6px;
+	border:1px solid #d83526;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:24px 24px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #b23e35;
+        }
+.linkBtn:hover {
+	background:linear-gradient(to bottom, #e4685d 5%, #fc8d83 100%);
+	background-color:#e4685d;
+}
+.linkBtn:active {
+	position:relative;
+	top:1px;
+}
+    .center {
+    margin-left: auto;
+    margin-right: auto;
+        }
+</style>
+<head>
+
+    <title>LO from Node.js to an ssexxssseeewwwwws</title>
+    
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js'></script>
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+
+</head>
+<body>
+   
+   <table id="mytable" class="center"></table>
+   <p id="showData"></p>
+   <p id="showDetails"></p>
+ 
+</body>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+
+<script type="text/javascript">
+
+$(document).ready(function () {
+    var data = [
+  {
+    "locoID": "21",
+    "LocoName": "Class 121",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "09",
+    "LocoName": "Class 108 with Passengers",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "08",
+    "LocoName": "Class 108 Without Passengers",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "03",
+    "LocoName": "Class 416",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "94",
+    "LocoName": "Class 94",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "50",
+    "LocoName": "Class 50",
+    "Slot": "0",
+    "Speed": "0"
+  }
+];
+
+$.each(data, function(i, v) {
+    $('<th>', {
+    html: [$( '<img src="images/'+v.LocoName+'.jpeg"><p>' + v.LocoName +'</p></th>', {
+    }
+    ,)]
+    }).appendTo('#mytable')
+})
+$('<tr></tr>').appendTo('#mytable')
+$.each(data, function(i, v) {
+    $('<th>', {
+    html: [$( '<button class="dirButton" id="loco'+ v.locoID +'rev" value ="32"><i class="fa-solid fa-arrow-left"></i></button></th>'
+    +'<button class="dirButton pressed" id="loco'+ v.locoID +'fwd" value ="0"><i class="fa-solid fa-arrow-right"></i></button>', {
+    }
+    ,)]
+    }).appendTo('#mytable')
+})
+
+$('<tr></tr>').appendTo('#mytable')
+$.each(data, function(i, v) {
+
+
+  $('<td>', {
+    html: [$('<input id="loco' + v.locoID + '" type="range"  value ="0" min="0" max="127" orient="vertical" class="speedSlider" />'
+    + '<p id="thisSpeedloco'+v.locoID+'">0</p><input type="button" state="off" class="linkBtn"  value="Link" id="linkloco'+v.locoID+'""></><td/>', {
+     
+      
+    }
+    ,)]
+  }).appendTo('#mytable')
+})
+
+
+        // EXTRACT VALUE FOR HTML HEADER. 
+        // ('Book ID', 'Book Name', 'Category' and 'Price')
+        var col = [];
+        for (var i = 0; i < data.length; i++) {
+            for (var key in data[i]) {
+                if (col.indexOf(key) === -1) {
+                    col.push(key);
+                }
+            }
+        }
+
+        // CREATE DYNAMIC TABLE.
+        var table = document.createElement("table");
+
+        // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+        var tr = table.insertRow(-1);                   // TABLE ROW.
+
+        for (var i = 0; i < col.length; i++) {
+            var th = document.createElement("th");      // TABLE HEADER.
+            th.innerHTML = col[i];
+            tr.appendChild(th);
+        }
+
+        // ADD JSON DATA TO THE TABLE AS ROWS.
+        for (var i = 0; i < data.length; i++) {
+
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = data[i][col[j]];
+            }
+        }
+
+        // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+        var divContainer = document.getElementById("showData");
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+
+
+        $(".dirButton").on('click', function(){
+            $(this).closest('th').find('.dirButton').toggleClass('pressed');
+        });
+
+        $('.speedSlider').on('input', function() {
+            speed = $(this).val();
+            loco = $(this).attr('id');
+            console.log(speed + loco);
+            $('#thisSpeed' + loco).text(speed);
+
+            state = $('#link'+loco).attr('state');
+            
+            if(state == "on")
+            {
+            $(".linkBtn").each(function(){
+                thisState = $(this).attr('state');
+                thisloco = $(this).attr('id');
+                if(thisState == "on")
+                {
+                    xx = thisloco.replace('link','');
+                    $('#thisSpeed' + xx).text(speed);
+                    $('#' + xx).val(speed);
+                    socket.emit('speedCmd', { "speed":speed, "loco":xx  });
+                    console.log(speed + xx);
+                }
+
+            });
+            }
+            socket.emit('speedCmd', { "speed":speed, "loco":loco  });
+            
+        });
+
+        $('.linkBtn').on('click', function() {
+            id = $(this).attr('id');
+            state = $(this).attr('state');
+            if(state =="off")
+            {
+                $('#'+id).attr('state','on');
+                $('#'+id).toggleClass('pressed');
+            }
+            else
+            {
+                $('#'+id).attr('state','off');
+                $('#'+id).toggleClass('pressed');
+            }
+
+        });
+        
+        var socket = io();
+
+
+
+
+
+        
+
+        socket.on('data', function(data) {
+            
+            console.log(data);
+            
+            
+
+        });
+
+
+});
+
+
+</script>
+</html>

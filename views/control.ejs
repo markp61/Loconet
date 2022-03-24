@@ -1,0 +1,244 @@
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+<body>
+  <%- include("./partials/nav.ejs") %>
+   <table id="mytable" class="center"></table>
+   <p id="showData"></p>
+   <p id="showDetails"></p>
+   <button id="lightOn">Turn Light On</button>
+   <button id="lightOff">Turn Light Off</button>
+   <button id="powerOn">Turn Power On</button>
+
+ 
+ 
+<p id = "GFG_UP" style =
+    "font-size: 15px; font-weight: bold;">
+</p>
+
+
+ 
+<br><br>
+ 
+    <table class="styled-table" align = "center" id="table" border="1">
+    </table>
+
+
+
+</body>
+
+
+
+
+
+
+
+<script type="text/javascript">
+  var list =[];
+  var socket = io.connect("localhost:3000", {transports: ['websocket']})
+  
+  socket.on('locoList Array', function(data) {
+    //alert(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
+    list = data;
+    console.log(list);
+    constructTable('#table')
+  });
+  
+  var el_up = document.getElementById("GFG_UP");
+      
+
+      
+  function constructTable(selector) {
+      
+      // Getting the all column names
+      var cols = Headers(list, selector); 
+
+      // Traversing the JSON data
+      for (var i = 0; i < list.length; i++) {
+          var row = $('<tr/>');  
+          for (var colIndex = 0; colIndex < cols.length; colIndex++)
+          {
+              var val = list[i][cols[colIndex]];
+              
+              // If there is any key, which is matching
+              // with the column name
+              if (val == null) val = ""; 
+                  row.append($('<td/>').html(val));
+          }
+          
+          // Adding each row to the table
+          $(selector).append(row);
+      }
+  }
+  
+  function Headers(list, selector) {
+      var columns = [];
+      var header = $('<tr/>');
+      
+      for (var i = 0; i < list.length; i++) {
+          var row = list[i];
+          
+          for (var k in row) {
+              if ($.inArray(k, columns) == -1) {
+                  columns.push(k);
+                  
+                  // Creating the header
+                  header.append($('<th/>').html(k));
+              }
+          }
+      }
+      
+      // Appending the header to the table
+      $(selector).append(header);
+          return columns;
+  }   
+
+$(document).ready(function () {
+
+
+
+
+    var data = [
+  {
+    "locoID": "21",
+    "LocoName": "Class 121",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "09",
+    "LocoName": "Class 108 with Passengers",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "08",
+    "LocoName": "Class 108 Without Passengers",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "03",
+    "LocoName": "Class 416",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "94",
+    "LocoName": "Class 94",
+    "Slot": "0",
+    "Speed": "0"
+  },
+  {
+    "locoID": "50",
+    "LocoName": "Class 50",
+    "Slot": "0",
+    "Speed": "0"
+  }
+];
+
+$.each(data, function(i, v) {
+    $('<th>', {
+    html: [$( '<img src="images/'+v.LocoName+'.jpeg"><p>' + v.LocoName +'</p></th>', {
+    }
+    ,)]
+    }).appendTo('#mytable')
+})
+$('<tr></tr>').appendTo('#mytable')
+$.each(data, function(i, v) {
+    $('<th>', {
+    html: [$( '<button class="dirButton" id="loco'+ v.locoID +'rev" value ="32"><i class="fa-solid fa-arrow-left"></i></button></th>'
+    +'<button class="dirButton pressed" id="loco'+ v.locoID +'fwd" value ="0"><i class="fa-solid fa-arrow-right"></i></button>', {
+    }
+    ,)]
+    }).appendTo('#mytable')
+})
+
+$('<tr></tr>').appendTo('#mytable')
+$.each(data, function(i, v) {
+
+
+  $('<td>', {
+    html: [$('<input id="loco' + v.locoID + '" type="range"  value ="0" min="0" max="127" orient="vertical" class="speedSlider" />'
+    + '<p id="thisSpeedloco'+v.locoID+'">0</p><input type="button" state="off" class="linkBtn"  value="Link" id="linkloco'+v.locoID+'""></><td/>', {
+     
+      
+    }
+    ,)]
+  }).appendTo('#mytable')
+})
+
+
+ 
+
+
+        $(".dirButton").on('click', function(){
+            $(this).closest('th').find('.dirButton').toggleClass('pressed');
+        });
+
+        $('.speedSlider').on('input', function() {
+            speed = $(this).val();
+            loco = $(this).attr('id');
+            console.log(speed + loco);
+            $('#thisSpeed' + loco).text(speed);
+            socket.emit('speedCmd', { "speed":speed, "loco":loco  });
+
+            state = $('#link'+loco).attr('state');
+            if(state == "on")
+            {
+            $(".linkBtn").each(function(){
+                thisState = $(this).attr('state');
+                thisloco = $(this).attr('id');
+                if(thisState == "on")
+                {
+                    xx = thisloco.replace('link','');
+                    $('#thisSpeed' + xx).text(speed);
+                    $('#' + xx).val(speed);
+                    socket.emit('speedCmd', { "speed":speed, "loco":xx  });
+                    console.log(speed + xx);
+                   
+                }
+
+            });
+            }
+           
+            
+        });
+
+        $('.linkBtn').on('click', function() {
+            id = $(this).attr('id');
+            state = $(this).attr('state');
+            if(state =="off")
+            {
+                $('#'+id).attr('state','on');
+                $('#'+id).toggleClass('pressed');
+            }
+            else
+            {
+                $('#'+id).attr('state','off');
+                $('#'+id).toggleClass('pressed');
+            }
+
+        });
+
+
+document.getElementById('lightOn').onclick = function() {
+        socket.emit('lights', { "status":"1" });
+      };
+
+      document.getElementById('lightOff').onclick = function(){               
+        socket.emit('lights', { "status":"0" });
+      };
+      document.getElementById('powerOn').onclick = function(){               
+        socket.emit('power', { "status":"1" });
+      };
+
+
+
+
+
+});
+
+
+</script>
+</html>
