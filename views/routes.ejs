@@ -1,0 +1,74 @@
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+<body>
+    <%- include("./partials/nav.ejs") %>
+    <form>
+        <label for="fnarouteNameme">Route Name</label><br>
+        <input type="text" id="routeName" name="routeName" value="Automation One"><br>
+        <label for="startBlock">Start Block:</label><br>
+        <label for="startBlock">Choose a starting block:</label>
+            <select id="blocks" name="blocks">
+            <option>Select ...</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+        <br>
+        <input type="button" value="Add Block Options">
+        <br>
+        <select id="blockOptions" name="blockOptions">
+            <option value="wait">Wait</option>
+            <option value="forwards">Set Direction Forwards</option>
+            <option value="reverse">Set Direction Reverse</option>
+            <option value="slowDown">Slow Down</option>
+            <option value="stop">Stop</option>
+        </select>
+        <br>
+        
+        <input type="button" value="Add Another Block Options">
+        <br>
+        <select id="blockOptions" name="blockOptions">
+            <option value="wait">Wait</option>
+            <option value="forwards">Set Direction Forwards</option>
+            <option value="reverse">Set Direction Reverse</option>
+            <option value="slowDown">Slow Down</option>
+            <option value="stop">Stop</option>
+        </select>
+        <br>
+        <input type="button" value="Add New Block">
+        <br>
+        <label for="newBlock">Choose a new block:</label>
+        <select id="blocks" name="blocks">
+            <option>Select ...</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+        <br>
+        <input id="submit" type="button" value="Submit">
+        
+      </form> 
+</body>
+
+<script>
+    $('#submit').click(function()
+    {
+        let auto1 = {
+	    
+	    "Step1" : [
+            [ "Block1","wait", "forward"],
+	    ],
+        "Step2" : [
+            ["Block2","slowDown","stop","wait","reverse"]
+        ],
+        "Step3" : [
+            ["Block1","slowDown","stop"]
+        ],
+        
+    }
+    console.log(auto1)
+    });
+
+</script>

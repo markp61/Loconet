@@ -1,0 +1,31 @@
+
+
+{ 
+    "autoTwo":
+    {
+        "Step1":
+        {
+            
+                
+                "Block": "1",
+                "Wait": "10",
+                "Direction" :"Forward"
+                
+            
+        },
+        "Step2":
+       
+            {
+                "Block": "16",
+                "SlowDown" :"20",
+                "Wait": "Yes",
+                "Direction" :"Forward",
+            
+                "Stop" :"Yes"
+
+            }
+        
+    }
+  
+}
+

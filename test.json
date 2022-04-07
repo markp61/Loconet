@@ -1,0 +1,63 @@
+{
+    "autoTwo": [
+        {
+            "loco": 94,
+            "id": 1,
+            "block": "1",
+            "actions": [
+                "Wait(5000)",
+                "setDirection(slot,0)",
+                "setSpeed(slot,50)"
+            ]  
+        },
+        {
+            "id": 2,
+            "block": "2",
+            "actions": [
+                "SlowDown",
+                "setSpeed(slot,0)",
+                "Wait(5000)",
+                "setDirection(slot,32)",
+                "setSpeed(slot,50)"
+            ]
+        },
+        {
+            "id": 3,
+            "block": "1",
+            "actions": [
+                "SlowDown",
+                "setSpeed(slot,0)",
+                "Wait(5000)",
+                "setDirection(slot,0)",
+                "setSpeed(slot,50)"
+            ]
+        }
+    ],
+    "autoThree": [
+        {
+            "loco":8,
+            "block": "1",
+            "setDirection": "Forward",
+            "actions": [
+                "setSpeed",
+                "messAbout"
+            ]
+        },
+        {
+            "block": "5",
+            "actions": [
+                "BeHappy" ,
+                "BeLoved",
+                "BeThankful"
+            ]
+        },
+        {
+            "block": "1",
+            "actions": [
+                "Flip" ,
+                "Flop",
+                "Flan"
+            ]
+        }
+    ]
+}

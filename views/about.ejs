@@ -1,16 +1,328 @@
-<html lang="en">
-<%- include("./partials/head.ejs") %>
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Generic - Hyperspace by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<link rel="stylesheet" href="/styles.css">
+		<link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+		<link rel="stylesheet" href="/styles/rsSliderLens.less">
+	   
+	   
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js'></script>
+		<title>Marks Loconet | <%= title %></title>
+	</head>
+	<body class="is-preload">
 
-<body>
-  <%- include("./partials/nav.ejs") %>
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">Hyperspace</a>
+				<nav>
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="generic.html" class="active">Generic</a></li>
+						<li><a href="elements.html">Elements</a></li>
+					</ul>
+				</nav>
+			</header>
 
-  <div class="about content">
-    <h2>About Us</h2>
-    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quia quibusdam quaerat illo a modi tenetur ut blanditiis, illum quo consectetur recusandae excepturi natus impedit rem, tempora cum fuga quae in.</p>
-    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quia quibusdam quaerat illo a modi tenetur ut blanditiis, illum quo consectetur recusandae excepturi natus impedit rem, tempora cum fuga quae in.</p>
-    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quia quibusdam quaerat illo a modi tenetur ut blanditiis, illum quo consectetur recusandae excepturi natus impedit rem, tempora cum fuga quae in.</p>
-  </div>
+		<!-- Wrapper -->
+			<div id="wrapper">
 
-  <%- include("./partials/footer.ejs") %>
-</body>
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
+							<h1 class="major">A Generic Page</h1>
+							<table id="mytable" class="styled-table"></table>
+							<p id="showData"></p>
+							<p id="showDetails"></p>
+							<button id="lightOn">Turn Light On</button>
+							<button id="lightOff">Turn Light Off</button>
+							<button id="powerOn">Turn Power On</button>
+							<button id="autoOne">Auto One</button>
+						 
+						  
+						   
+						 <p id = "GFG_UP" style =
+							 "font-size: 15px; font-weight: bold;">
+						 </p>
+						 
+						 
+						  
+						 <br><br>
+						  
+							 <table class="styled-table" align = "center" id="loconetDetails" border="1">
+							 </table>
+							<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fergiat. Pellentesque in mi eu massa lacinia malesuada et a elit. Donec urna ex, lacinia in purus ac, pretium pulvinar mauris. Curabitur sapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique.</p>
+							<p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fersapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique lorem ipsum dolor.</p>
+						</div>
+					</section>
+
+			</div>
+			<P>HELLO</P>
+			<input type="range">
+	
+			<p>bye</p>
+		
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="scripts/jquery.rsSliderLens.js"></script>
+
+	</body>
+
+	<script type="text/javascript">
+	$("input").rsSliderLens();
+
+
+		var list =[];
+		var socket = io.connect("localhost:3000", {transports: ['websocket']})
+		
+		socket.on('locoList Array', function(data) {
+		  //alert(JSON.stringify(data));
+		  //console.log(JSON.stringify(data));
+		  list = data;
+		  console.log(list);
+		  constructTable('#loconetDetails')
+		});
+		
+		var el_up = document.getElementById("GFG_UP");
+			
+	  
+			
+		function constructTable(selector) {
+		  //if the table has rows remove them so we dont just keep adding rows
+		  if ($('#loconetDetails').length) {
+			$("#loconetDetails").empty();
+		  }
+	  
+			// Getting the all column names
+			var cols = Headers(list, selector); 
+	  
+			// Traversing the JSON data
+			for (var i = 0; i < list.length; i++) {
+				var row = $('<tr/>');  
+				for (var colIndex = 0; colIndex < cols.length; colIndex++)
+				{
+					var val = list[i][cols[colIndex]];
+	  
+				   
+	  
+					// If there is any key, which is matching
+					// with the column name
+					if (val == null) val = ""; 
+						row.append($('<td/>').html(val).css('color', 'red'));
+						
+				}
+				
+				// Adding each row to the table
+				$(selector).append(row);
+			}
+		}
+		
+		function Headers(list, selector) {
+			var columns = [];
+			var header = $('<tr/>');
+			
+			for (var i = 0; i < list.length; i++) {
+				var row = list[i];
+				
+				for (var k in row) {
+					if ($.inArray(k, columns) == -1) {
+						columns.push(k);
+						
+						// Creating the header
+						header.append($('<th/>').html(k));
+					}
+				}
+			}
+			
+			// Appending the header to the table
+			$(selector).append(header);
+				return columns;
+		}   
+	  
+	  $(document).ready(function () {
+	  
+	  
+	  
+	  
+		  var data = [
+		{
+		  "locoID": "21",
+		  "LocoName": "Class 121",
+		  "Slot": "0",
+		  "Speed": "0"
+		},
+		{
+		  "locoID": "09",
+		  "LocoName": "Class 108 with Passengers",
+		  "Slot": "0",
+		  "Speed": "0"
+		},
+		{
+		  "locoID": "08",
+		  "LocoName": "Class 108 Without Passengers",
+		  "Slot": "0",
+		  "Speed": "0"
+		},
+		{
+		  "locoID": "03",
+		  "LocoName": "Class 416",
+		  "Slot": "0",
+		  "Speed": "0"
+		},
+		{
+		  "locoID": "94",
+		  "LocoName": "Class 94",
+		  "Slot": "0",
+		  "Speed": "0"
+		},
+		{
+		  "locoID": "50",
+		  "LocoName": "Class 50",
+		  "Slot": "0",
+		  "Speed": "0"
+		}
+	  ];
+	  
+	  $.each(data, function(i, v) {
+		  $('<th>', {
+		  html: [$( '<img src="images/'+v.LocoName+'.jpeg"><p>' + v.LocoName +'</p></th>', {
+		  }
+		  ,)]
+		  }).appendTo('#mytable')
+	  })
+	  $('<tr></tr>').appendTo('#mytable')
+	  $.each(data, function(i, v) {
+		  $('<th>', {
+		  html: [$( '<button class="dirButton" id="loco'+ v.locoID +'rev" value ="32"><i class="fa-solid fa-arrow-left"></i></button></th>'
+		  +'<button class="dirButton pressed" id="loco'+ v.locoID +'fwd" value ="0"><i class="fa-solid fa-arrow-right"></i></button>', {
+		  }
+		  ,)]
+		  }).appendTo('#mytable')
+	  })
+	  
+	  $('<tr></tr>').appendTo('#mytable')
+	  $.each(data, function(i, v) {
+	  
+	  
+		$('<td>', {
+		  html: [$('<input id="loco' + v.locoID + '" type="range"  value ="0" min="0" max="127" orient="vertical" class="speedSlider" />'
+		  + '<p id="thisSpeedloco'+v.locoID+'">0</p><input type="button" state="off" class="linkBtn"  value="Link" id="linkloco'+v.locoID+'""></><td/>', {
+		   
+			
+		  }
+		  ,)]
+		}).appendTo('#mytable')
+	  })
+	  
+	  
+			$("#autoOne").on('click', function(){
+				  
+				  direction = 0;
+				  loco = "loco" + 94;
+				  console.log(direction + loco);
+				  
+				  socket.emit('autoOne', { "direction":direction, "loco":loco  });
+			  });
+	  
+	  
+			  $(".dirButton").on('click', function(){
+				  $(this).closest('th').find('.dirButton').toggleClass('pressed');
+				  direction = $(this).val();
+				  loco = $(this).attr('id').slice(0,-3);
+				  console.log(direction + loco);
+				  
+				  socket.emit('dirCmd', { "direction":direction, "loco":loco  });
+			  });
+	  
+			  $('.speedSlider').on('input', function() {
+				  speed = $(this).val();
+				  loco = $(this).attr('id');
+				  console.log(speed + loco);
+				  $('#thisSpeed' + loco).text(speed);
+				  socket.emit('speedCmd', { "speed":speed, "loco":loco  });
+	  
+				  state = $('#link'+loco).attr('state');
+				  if(state == "on")
+				  {
+				  $(".linkBtn").each(function(){
+					  thisState = $(this).attr('state');
+					  thisloco = $(this).attr('id');
+					  if(thisState == "on")
+					  {
+						  xx = thisloco.replace('link','');
+						  $('#thisSpeed' + xx).text(speed);
+						  $('#' + xx).val(speed);
+						  socket.emit('speedCmd', { "speed":speed, "loco":xx  });
+						  console.log(speed + xx);
+						 
+					  }
+	  
+				  });
+				  }
+				 
+				  
+			  });
+	  
+			  $('.linkBtn').on('click', function() {
+				  id = $(this).attr('id');
+				  state = $(this).attr('state');
+				  if(state =="off")
+				  {
+					  $('#'+id).attr('state','on');
+					  $('#'+id).toggleClass('pressed');
+				  }
+				  else
+				  {
+					  $('#'+id).attr('state','off');
+					  $('#'+id).toggleClass('pressed');
+				  }
+	  
+			  });
+	  
+	  
+	  document.getElementById('lightOn').onclick = function() {
+			  socket.emit('lights', { "status":"1" });
+			};
+	  
+			document.getElementById('lightOff').onclick = function(){               
+			  socket.emit('lights', { "status":"0" });
+			};
+			document.getElementById('powerOn').onclick = function(){               
+			  socket.emit('power', { "status":"1" });
+			};
+	  
+	  
+	  
+	  
+	  
+	  });
+	  
+	  
+	  </script>
 </html>

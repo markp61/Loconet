@@ -1,21 +1,23 @@
-<html lang="en">
-<%- include("./partials/head.ejs") %>
+<!DOCTYPE html>
 
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>jQuery slider method</title>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+
+</head>
 <body>
-  <%- include("./partials/nav.ejs") %>
+  <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/>
 
-  <div class="create-blog content">
-    <form>
-      <label for="title">Blog title:</label>
-      <input type="text" id="title" name="title" required>
-      <label for="snippet">Blog snippet:</label>
-      <input type="text" id="snippet" name="snippet" required>
-      <label for="body">Blog body:</label>
-      <textarea id="body" name="body" required></textarea>
-      <button>Submit</button>
-    </form>
-  </div>
-
-  <%- include("./partials/footer.ejs") %>
+    <script>
+$('#ex1').slider({
+	formatter: function(value) {
+		return 'Current value: ' + value;
+	}
+});
+    </script>
 </body>
 </html>

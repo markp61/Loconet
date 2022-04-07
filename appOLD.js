@@ -44,8 +44,6 @@ const io = new Server(server);
   var autoThreeRunning
   var autoThreeOn
 
-  
-
 
 //Arduino Port Setup
 const { SerialPort } = require('serialport');
@@ -495,7 +493,7 @@ async function checkAutomationRules(thisBlock,thisBlockState)
       console.log("Loco Not in starting BLOCK " );
       autoTwoOn = 0;
       autoID = "autoTwo"
-      testFunction(autoID,thisBlock,thisBlockState);
+      testFunction(autoID);
     }
   }
   //AUTO 3
@@ -514,19 +512,31 @@ async function checkAutomationRules(thisBlock,thisBlockState)
       console.log("Loco Not in starting BLOCK " );
       autoThreeOn = 0;
       autoID = "autoThree"
-      testFunction(autoID,thisBlock,thisBlockState);
+      testFunction(autoID);
     }
   }
 }
 
-async function testFunction(autoID,thisBlock,thisBlockState)
+function testFunction(autoID)
 {
+  console.log(autoID)
+  var jsonObj = require("./routeData.json");
+  var keys = Object.keys(jsonObj.autoTwo);
+  //var values = Object.values(jsonObj.autoTwo);
+  //var subkeys = Object.keys(jsonObj.autoTwo[keys[0]][0]);
+  //var subValues = Object.values(jsonObj.autoTwo[keys[0]][0]);
+  //var firstVal = Object.keys(jsonObj.autoTwo)[0];
+  //console.log(subkeys);
+  //console.log(subkeys[1]);
+  //console.log(subValues[1]);
+  //console.log(subkeys[2]);
+  
 
   //get the blocks involved in this automation sequence
   //when a relevant sensor to the sequence is high fire the appropriate functions
   //in case once sequence has 2 bolocks the same with different things to do we'll
   //keep track of them by having a count on each block so that the lowest count ones applies
- console.log("Blocks used in this sequence are : ")
+  console.log("Blocks used in this sequence are : ")
 
  const fs = require('fs');
  fs.readFile('./test.json', { encoding: 'utf8' }, function(err, data) {
@@ -540,79 +550,48 @@ async function testFunction(autoID,thisBlock,thisBlockState)
 
   //console.log(data);
   bloxUsed = []
-  bloxUsedCount = [] 
-  
-
 
   //THIS GETS THE BLOCKS USED
   for(var i = 0; i < data[autoID].length; i++)
   {
+      //console.log(data.autoTwo)
       var product = data[autoID][i];
-      var blox = product.block
-      var id = product.id
+      var blox = product.block;
+      //console.log(blox)
       bloxUsed.push(blox)
-      //if array does NOT contain this enrty.....
-      bloxUsedCount.push({autoID,id,Block:blox,Count:0}) 
-
-      bloxUsedCount.map(function (counter) {
-        if (counter.autoID == autoID && counter.Block == blox && counter.id == id) {
-          
-          console.log("yep in array"+[i])
-        } else {
-          // used to keep a count of each usage in case we have more than 1 of the same block in a sequence
-          
-        console.log("no in arry"+[i])
-        }
-      });
-      
-
-
-      
+      // for(var j = 0; j < product.actions.length; j++)
+      // {
+      //     var version = product.actions[j];
+      //     console.log(version)
+      // }
   }
-  console.log(bloxUsed)
-  console.log (bloxUsedCount)
-
 
   //NOW GET THE ACTIONS FOR THE BLOCK DETECTED
   thisBlock = "1"
   thisBlockState ="High"
-
+  console.log(bloxUsed)
   
   //if thisBlock in array do bits associated with said block
   
   //find associated bits
-  if(bloxUsed.includes(thisBlock) && thisBlockState =="High")
-  
+  if(bloxUsed.includes(thisBlock))
   {
-    //Get Loco Used in this Automation Sequence
-    console.log("Loco is "+  data[autoID][0].loco)
-    autoLoco = data[autoID][0].loco
-    objIndex = locoList.findIndex((obj => obj.address ==  autoLoco));
-    thisSlot = locoList[objIndex].slot;
-    console.log("Loco is in Slot : " + thisSlot)
-
     objIndex = bloxUsed.findIndex((obj => obj === thisBlock));
+    //console.log(objIndex)
+
+
     var bbb =  data[autoID][objIndex]
     console.log(bbb.actions.length + " Actions for this Block : ")
-    loop()
-    async function loop()
-        {
-        for (let i = 0; i < bbb.actions.length; i++) {
-            //console.log(bbb.actions[i]);
-            await wait(500)
-            console.log(bbb.actions[i].replace("slot",thisSlot))
-            //update BloxUsedCount
-            
-        }
-        objIndex = bloxUsedCount.findIndex((obj => obj.autoID == autoID && obj.Block == blox));
-
-        //bloxUsedCount[objIndex].Count ++
-        //console.log(bloxUsedCount)
+    for (let i = 0; i < bbb.actions.length; i++) {
+      console.log(bbb.actions[i]);
     }
+
+    
+
   }
-  else{
-    console.log("This Block is not used in this sequence")
-  }
+
+
+
 });
 }
 
@@ -650,9 +629,9 @@ function setDirection(slot,direction)
   locoList[objIndex].direction = direction;
 }
 
-
-const wait = (milliseconds) => {
-  return new Promise(resolve => setTimeout(resolve, milliseconds))
+function wait(milleseconds) {
+  console.log("waiting");
+  return new Promise(resolve => setTimeout(resolve, milleseconds))
 }
 
 

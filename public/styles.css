@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap');
 body{
-max-width: 1200px;
+max-width: 1260px;
 margin: 20px auto;
+margin: 20px;
 padding: 0 20px;
 font-family: 'Noto Serif', serif;
-max-width: 1200px;
+
 }
 p, h1, h2, h3, a, ul{
 margin: 0;
@@ -97,22 +98,61 @@ p {
 }
     
     
-input[type=range][orient=vertical]
-{
-    writing-mode: bt-lr; /* IE */
-    -webkit-appearance: slider-vertical; /* Chromium */
-    width: 8px;
-    height: 175px;
-    padding: 0 5px;
+
+.speedSlider {
+  -webkit-appearance: slider-vertical; 
+  width: 100%;
+  height: 300px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
 }
-    
+
+.speedSlider:hover {
+  opacity: 1;
+}
+
+.speedSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.speedSlider::-moz-range-thumb {
+  width: 5px;
+  height: 5px;
+  background: #04AA6D;
+  cursor: pointer;
+}    
 .dirButton {
-      background-color: blue;
+background-color: rgba(233, 130, 130, 0.63);
+box-shadow:inset 0px 1px 0px 0px #f7c5c0;
+border-radius:6px;
+
+display:inline-block;
+cursor:pointer;
+color:#ffffff;
+font-family:Arial;
+font-size:15px;
+font-weight:bold;
+padding:24px 24px;
+text-decoration:none;
+text-shadow:0px 1px 0px #b23e35;
+margin: 5px;
+
 
   }
 
   .dirButton.pressed {
-      background-color: red;
+      background-color: green;
+      margin: 5px;
+      
   }
     
 #mytable td {
@@ -168,13 +208,11 @@ padding:24px 24px;
 text-decoration:none;
 text-shadow:0px 1px 0px #b23e35;
     }
-.linkBtn:hover {
-background:linear-gradient(to bottom, #8a89c0 5%, #464ca5 100%);
-background-color:#193592;
-}
+
 .linkBtn:active {
 position:relative;
 top:1px;
+
 }
 .center {
 margin-left: auto;
@@ -186,7 +224,7 @@ margin-right: auto;
   margin: 25px 0;
   font-size: 0.9em;
   font-family: sans-serif;
-  min-width: 400px;
+  min-width: 200px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   margin-left: auto;
   margin-right: auto;
@@ -212,3 +250,4 @@ margin-right: auto;
 .styled-table tbody tr:last-of-type {
   border-bottom: 2px solid #009879;
 }
+

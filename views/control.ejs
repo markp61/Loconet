@@ -5,10 +5,44 @@
    <table id="mytable" class="styled-table"></table>
    <p id="showData"></p>
    <p id="showDetails"></p>
-   <button id="lightOn">Turn Light On</button>
-   <button id="lightOff">Turn Light Off</button>
-   <button id="powerOn">Turn Power On</button>
-   <button id="autoOne">Auto One</button>
+   <table class="styled-table" align = "center" id="buttons" border="1">
+     <tr>
+       <td>
+        <button id="lightOn">Turn Light On</button>
+       </td>
+       <td>
+        <button id="lightOff">Turn Light Off</button>
+       </td>
+       <td>
+        <button id="powerOn">Turn Power On</button>
+       </td>
+       <td>
+        <button id="autoOne">Auto One On</button>
+       </td>
+       <td>
+        <button id="autoOneOff">Auto One Off</button>
+       </td>
+       <td>
+        <button id="autoTwo">Auto Two On</button>
+       </td>
+       <td>
+        <button id="autoTwoOff">Auto Two Off</button>
+       </td>
+       <td>
+        <button id="autoThree">Auto Three On</button>
+       </td>
+       <td>
+        <button id="autoThreeOff">Auto Three Off</button>
+       </td>
+       
+     </tr>
+
+
+   </table>
+   
+ 
+
+
 
  
   
@@ -23,7 +57,9 @@
     <table class="styled-table" align = "center" id="loconetDetails" border="1">
     </table>
 
-
+    <p>Go to the
+      <a href="#mytable">top</a>.
+    </p>
 
 </body>
 
@@ -35,7 +71,7 @@
 
 <script type="text/javascript">
   var list =[];
-  var socket = io.connect("localhost:3000", {transports: ['websocket']})
+  var socket = io.connect("192.168.1.106:3000", {transports: ['websocket']})
   
   socket.on('locoList Array', function(data) {
     //alert(JSON.stringify(data));
@@ -115,13 +151,13 @@ $(document).ready(function () {
   },
   {
     "locoID": "09",
-    "LocoName": "Class 108 with Passengers",
+    "LocoName": "Class 108 Passengers",
     "Slot": "0",
     "Speed": "0"
   },
   {
     "locoID": "08",
-    "LocoName": "Class 108 Without Passengers",
+    "LocoName": "Class 108",
     "Slot": "0",
     "Speed": "0"
   },
@@ -184,6 +220,46 @@ $.each(data, function(i, v) {
             console.log(direction + loco);
             
             socket.emit('autoOne', { "direction":direction, "loco":loco  });
+        });
+        $("#autoOneOff").on('click', function(){
+            
+            direction = 0;
+            loco = "loco" + 94;
+            console.log(direction + loco);
+            
+            socket.emit('autoTwoOff', { "direction":direction, "loco":loco  });
+        });
+        $("#autoTwo").on('click', function(){
+            
+            direction = 0;
+            loco = "loco" + 94;
+            console.log(direction + loco);
+            
+            socket.emit('autoTwo', { "direction":direction, "loco":loco  });
+        });
+        $("#autoTwoOff").on('click', function(){
+            
+            direction = 0;
+            loco = "loco" + 94;
+            console.log(direction + loco);
+            
+            socket.emit('autoTwoOff', { "direction":direction, "loco":loco  });
+        });
+        $("#autoThree").on('click', function(){
+            
+            direction = 0;
+            loco = "loco" + 94;
+            console.log(direction + loco);
+            
+            socket.emit('autoThree', { "direction":direction, "loco":loco  });
+        });
+        $("#autoThreeOff").on('click', function(){
+            
+            direction = 0;
+            loco = "loco" + 94;
+            console.log(direction + loco);
+            
+            socket.emit('autoThreeOff', { "direction":direction, "loco":loco  });
         });
 
 
