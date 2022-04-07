@@ -43,6 +43,7 @@ const io = new Server(server);
   var autoTwoOn
   var autoThreeRunning
   var autoThreeOn
+  bloxUsedCount = [] 
 
   
 
@@ -540,7 +541,7 @@ async function testFunction(autoID,thisBlock,thisBlockState)
 
   //console.log(data);
   bloxUsed = []
-  bloxUsedCount = [] 
+
   
 
 
@@ -550,24 +551,18 @@ async function testFunction(autoID,thisBlock,thisBlockState)
       var product = data[autoID][i];
       var blox = product.block
       var id = product.id
-      bloxUsed.push(blox)
-      //if array does NOT contain this enrty.....
-      bloxUsedCount.push({autoID,id,Block:blox,Count:0}) 
-
-      bloxUsedCount.map(function (counter) {
-        if (counter.autoID == autoID && counter.Block == blox && counter.id == id) {
-          
-          console.log("yep in array"+[i])
-        } else {
-          // used to keep a count of each usage in case we have more than 1 of the same block in a sequence
-          
-        console.log("no in arry"+[i])
-        }
-      });
       
-
-
-      
+      bloxUsed.push({Block:blox,id})
+      console.log(autoID,id)
+      if (bloxUsedCount.some(e => e.autoID === autoID && e.id ===id)) {
+        //console.log("Already in Arry")
+      }
+      else
+      {
+        //console.log("not in...")
+        //if array does NOT contain this enrty.....
+        bloxUsedCount.push({autoID,id,Block:blox,Count:0}) 
+      }
   }
   console.log(bloxUsed)
   console.log (bloxUsedCount)
@@ -581,18 +576,34 @@ async function testFunction(autoID,thisBlock,thisBlockState)
   //if thisBlock in array do bits associated with said block
   
   //find associated bits
-  if(bloxUsed.includes(thisBlock) && thisBlockState =="High")
-  
+  //if(bloxUsed.includes(thisBlock) && thisBlockState =="High")
+  if (bloxUsed.some(e => e.Block === thisBlock)&& thisBlockState =="High") 
   {
+   
     //Get Loco Used in this Automation Sequence
     console.log("Loco is "+  data[autoID][0].loco)
     autoLoco = data[autoID][0].loco
-    objIndex = locoList.findIndex((obj => obj.address ==  autoLoco));
-    thisSlot = locoList[objIndex].slot;
+    locoIndex = locoList.findIndex((obj => obj.address ==  autoLoco));
+    thisSlot = locoList[locoIndex].slot;
     console.log("Loco is in Slot : " + thisSlot)
+    ///THIS IS WHERE WE NEED TO GET THE DETAILS FOR THE BLOCK WITH THE LOWEST COUNT //
 
-    objIndex = bloxUsed.findIndex((obj => obj === thisBlock));
-    var bbb =  data[autoID][objIndex]
+
+    let result = bloxUsedCount.filter(a => a.Block == thisBlock && a.autoID == autoID).sort((a, b) => a.Count - b.Count)
+    .filter((item, index, array) => item.Count === array[0].Count);
+    console.log(result[0]);
+    console.log(bloxUsed)
+    //objIndex = bloxUsed.findIndex(e => e.autoID === result[0].autoID && e.id ===result[0].id && e.Block=== result[0].Block);
+
+ 
+    console.log(result[0].id)
+ 
+    actions = bloxUsed.findIndex((a => a.Block === thisBlock && a.id == result[0].id));
+    console.log("ACTION IS " + actions)
+    console.log(actions)
+ 
+    var bbb =  data[autoID][actions]
+    console.log(bbb)
     console.log(bbb.actions.length + " Actions for this Block : ")
     loop()
     async function loop()
@@ -604,10 +615,11 @@ async function testFunction(autoID,thisBlock,thisBlockState)
             //update BloxUsedCount
             
         }
-        objIndex = bloxUsedCount.findIndex((obj => obj.autoID == autoID && obj.Block == blox));
-
-        //bloxUsedCount[objIndex].Count ++
-        //console.log(bloxUsedCount)
+        
+        objIndex = bloxUsedCount.findIndex((obj => obj.autoID == autoID && obj.Block == blox && obj.id == result[0].id));
+      
+        bloxUsedCount[objIndex].Count ++
+        console.log(bloxUsedCount)
     }
   }
   else{

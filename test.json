@@ -2,7 +2,7 @@
     "autoTwo": [
         {
             "loco": 94,
-            "id": 1,
+            "id": 0,
             "block": "1",
             "actions": [
                 "Wait(5000)",
@@ -11,7 +11,7 @@
             ]  
         },
         {
-            "id": 2,
+            "id": 1,
             "block": "2",
             "actions": [
                 "SlowDown",
@@ -22,7 +22,7 @@
             ]
         },
         {
-            "id": 3,
+            "id": 2,
             "block": "1",
             "actions": [
                 "SlowDown",
@@ -36,22 +36,22 @@
     "autoThree": [
         {
             "loco":8,
+            "id": 0,
             "block": "1",
-            "setDirection": "Forward",
             "actions": [
-                "setSpeed",
-                "messAbout"
+                "setSpeed"
             ]
         },
         {
+            "id": 1,
             "block": "5",
             "actions": [
-                "BeHappy" ,
-                "BeLoved",
-                "BeThankful"
+                "BeHappy" 
+      
             ]
         },
         {
+            "id": 2,
             "block": "1",
             "actions": [
                 "Flip" ,
