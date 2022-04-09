@@ -190,6 +190,13 @@ io.on('connection', (socket) => {
     loconet.write( buffer );
 
   });
+
+  socket.on('saveJSON', (data) => {
+    saveJSON();
+
+  });
+
+
   //Automation one test
   socket.on('autoOne', (data) => {
     autoOneOn=1;
@@ -398,7 +405,7 @@ io.on('connection', function(socket) {
           checkAutomationRules(thisBlock,thisBlockState);
           break;
       }
-      console.log("Block " + thisBlock + " blockState " + thisBlockState)
+      console.log(".....Block " + thisBlock + " blockState " + thisBlockState)
       if(thisBlockState === "High")
       {
         objIndex = locoList.findIndex((obj => obj.address ==  94));
@@ -412,6 +419,7 @@ io.on('connection', function(socket) {
 //checkAutomationRules
 async function checkAutomationRules(thisBlock,thisBlockState)
 {
+  console.log("THIS BLOCK>>>>>>This Block is "+ thisBlock + "thisBlockState is : " + thisBlockState )
   if(autoOneOn == 1)
   {
     objIndex = blockList.findIndex((obj => obj.block == 1));
@@ -483,6 +491,7 @@ async function checkAutomationRules(thisBlock,thisBlockState)
   //AUTO 2
   if(autoTwoOn == 1)
   {    
+    console.log(thisBlock)
     //in the blocks array, find the block in step 1 an if occupied all is good to start
     objIndex = blockList.findIndex((obj => obj.block == 1));
     if(blockList[objIndex].blockOccupied == 1)
@@ -490,14 +499,22 @@ async function checkAutomationRules(thisBlock,thisBlockState)
       autoTwoRunning = 1;
       autoTwoOn = 2; //set to 2 to stop it returning here once running
       console.log("All set");
+      thisBlock = 1;
+      thisBlockState = "High";
+      autoID = "autoTwo"
       //run the sequence
+      testFunction(autoID,thisBlock,thisBlockState);
+      return;
     }
     else{
       console.log("Loco Not in starting BLOCK " );
       autoTwoOn = 0;
       autoID = "autoTwo"
-      testFunction(autoID,thisBlock,thisBlockState);
     }
+  }
+  if(autoTwoOn ==2)
+  {
+    testFunction(autoID,thisBlock,thisBlockState);
   }
   //AUTO 3
   if(autoThreeOn == 1)
@@ -510,12 +527,13 @@ async function checkAutomationRules(thisBlock,thisBlockState)
       autoThreeOn = 2; //set to 2 to stop it returning here once running
       console.log("All set");
       //run the sequence
+      testFunction(autoID,thisBlock,thisBlockState);
     }
     else{
       console.log("Loco Not in starting BLOCK " );
       autoThreeOn = 0;
       autoID = "autoThree"
-      testFunction(autoID,thisBlock,thisBlockState);
+      
     }
   }
 }
@@ -527,6 +545,7 @@ async function testFunction(autoID,thisBlock,thisBlockState)
   //when a relevant sensor to the sequence is high fire the appropriate functions
   //in case once sequence has 2 bolocks the same with different things to do we'll
   //keep track of them by having a count on each block so that the lowest count ones applies
+ console.log("This Block is "+ thisBlock + "thisBlockState is : " + thisBlockState )
  console.log("Blocks used in this sequence are : ")
 
  const fs = require('fs');
@@ -569,15 +588,15 @@ async function testFunction(autoID,thisBlock,thisBlockState)
 
 
   //NOW GET THE ACTIONS FOR THE BLOCK DETECTED
-  thisBlock = "1"
-  thisBlockState ="High"
+ // thisBlock = 1
+ // thisBlockState ="High"
 
   
   //if thisBlock in array do bits associated with said block
   
   //find associated bits
   //if(bloxUsed.includes(thisBlock) && thisBlockState =="High")
-  if (bloxUsed.some(e => e.Block === thisBlock)&& thisBlockState =="High") 
+  if (bloxUsed.some(e => e.Block == thisBlock)&& thisBlockState =="High") 
   {
    
     //Get Loco Used in this Automation Sequence
@@ -598,7 +617,7 @@ async function testFunction(autoID,thisBlock,thisBlockState)
  
     console.log(result[0].id)
  
-    actions = bloxUsed.findIndex((a => a.Block === thisBlock && a.id == result[0].id));
+    actions = bloxUsed.findIndex((a => a.Block == thisBlock && a.id == result[0].id));
     console.log("ACTION IS " + actions)
     console.log(actions)
  
@@ -611,13 +630,19 @@ async function testFunction(autoID,thisBlock,thisBlockState)
         for (let i = 0; i < bbb.actions.length; i++) {
             //console.log(bbb.actions[i]);
             await wait(500)
-            console.log(bbb.actions[i].replace("slot",thisSlot))
-            //update BloxUsedCount
+            var cmdToSend =  bbb.actions[i].replace("slot",thisSlot)
+            console.log(cmdToSend)
+            //send Loconet Command
             
+            eval(cmdToSend)
+
         }
-        
-        objIndex = bloxUsedCount.findIndex((obj => obj.autoID == autoID && obj.Block == blox && obj.id == result[0].id));
+        console.log(blox)
+        objIndex = bloxUsedCount.findIndex((obj => obj.autoID == autoID && obj.Block == thisBlock && obj.id == result[0].id));
+        console.log(bloxUsedCount)
+        console.log(result)
       
+        console.log("TEST: " + objIndex + "" +autoID +" "+blox + " "+ result[0].id)
         bloxUsedCount[objIndex].Count ++
         console.log(bloxUsedCount)
     }
@@ -628,7 +653,10 @@ async function testFunction(autoID,thisBlock,thisBlockState)
 });
 }
 
-
+function sayHello(name)
+{
+  console.log("HELLO!" + name)
+}
 //set Speed
 function setSpeed(slot,speed)
 {
@@ -662,8 +690,45 @@ function setDirection(slot,direction)
   locoList[objIndex].direction = direction;
 }
 
+//SpeedRamp
+function speedRamp(slot,speed,finalSpeed,slowDownTime)
+{
+    let steps = 10;
+    if(speed < finalSpeed)
+    {
+       increment = (speed - finalSpeed)/ steps;
+    }
+    else
+    {
+       increment = (finalSpeed - speed)/ steps;
+    }
+    var loopCount = 1;
+    var interval = setInterval(function () {
+        if (loopCount <= steps) {
+            console.log(speed);
+            if(speed < finalSpeed)
+            {
+              speed = Math.round((speed - increment));
+            }
+            else
+            {
+              speed = Math.round((speed + increment));
+            }
+            setSpeed(slot,speed)
+            loopCount++;
+        }
+        else {
+            speed = finalSpeed;
+            console.log(speed);
+            setSpeed(slot,speed)
+            clearInterval(interval);
+        }
+    }, slowDownTime);
+}
+
 
 const wait = (milliseconds) => {
+  console.log("im Waiting.......")
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
@@ -692,5 +757,29 @@ function chk (buffer)
         
     }
 
-
+    function saveJSON(filename)
+    {
+          // file system module to perform file operations
+          const fs = require('fs');
+          
+          // json data
+          var jsonData = '{"persons":[{"name":"John","city":"New York"},{"name":"Phil","city":"Ohio"}]}';
+          
+          // parse json
+          var jsonObj = JSON.parse(jsonData);
+          console.log(jsonObj);
+          
+          // stringify JSON Object
+          var jsonContent = JSON.stringify(jsonObj);
+          console.log(jsonContent);
+          
+          fs.writeFile("output.json", jsonContent, 'utf8', function (err) {
+              if (err) {
+                  console.log("An error occured while writing JSON Object to File.");
+                  return console.log(err);
+              }
+          
+              console.log("JSON file has been saved.");
+});
+    }
 

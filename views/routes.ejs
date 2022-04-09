@@ -2,57 +2,144 @@
 <%- include("./partials/head.ejs") %>
 <body>
     <%- include("./partials/nav.ejs") %>
-    <form>
-        <label for="fnarouteNameme">Route Name</label><br>
-        <input type="text" id="routeName" name="routeName" value="Automation One"><br>
-        <label for="startBlock">Start Block:</label><br>
-        <label for="startBlock">Choose a starting block:</label>
-            <select id="blocks" name="blocks">
-            <option>Select ...</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
-        <br>
-        <input type="button" value="Add Block Options">
-        <br>
-        <select id="blockOptions" name="blockOptions">
-            <option value="wait">Wait</option>
-            <option value="forwards">Set Direction Forwards</option>
-            <option value="reverse">Set Direction Reverse</option>
-            <option value="slowDown">Slow Down</option>
-            <option value="stop">Stop</option>
-        </select>
-        <br>
-        
-        <input type="button" value="Add Another Block Options">
-        <br>
-        <select id="blockOptions" name="blockOptions">
-            <option value="wait">Wait</option>
-            <option value="forwards">Set Direction Forwards</option>
-            <option value="reverse">Set Direction Reverse</option>
-            <option value="slowDown">Slow Down</option>
-            <option value="stop">Stop</option>
-        </select>
-        <br>
-        <input type="button" value="Add New Block">
-        <br>
-        <label for="newBlock">Choose a new block:</label>
-        <select id="blocks" name="blocks">
-            <option>Select ...</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
-        <br>
-        <input id="submit" type="button" value="Submit">
-        
-      </form> 
+
+
+    <label for="fnarouteNameme">Route Name</label><br>
+    <input type="text" id="routeName" name="routeName" value="Automation One"><br>
+
+      <form method="post" action="#" class="inlineForm" enctype="multipart/form-data">
+        <div class="repeatingSection form-group">
+
+            
+            <input type="hidden" name="a_id_1" id="a_id_1" value="" />
+            <input type="hidden" name="b_id_1" id="b_id_1" value="" />
+            <input type="hidden" name="id_1" id="id_1" value="" />
+            <div class="form-froup">
+                
+                <div class="form-group">
+                    <label for="startBlock">Choose a starting block:</label>
+                    <select class="form-control" id="blocks" name="blocks">
+                        <option>Select ...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                    </select>
+                </div>
+
+            </div>
+            <input type="button" value="Add Block Options" id="addOptions">
+            <br>
+            <div id="blockOptionsDiv" style="display:none">
+                <select id="blockOptions" name="blockOptions" >
+                    <option value="wait">Wait</option>
+                    <option value="forwards">Set Direction Forwards</option>
+                    <option value="reverse">Set Direction Reverse</option>
+                    <option value="slowDown">Slow Down</option>
+                    <option value="stop">Stop</option>
+                </select>
+                <br>
+                
+            <div class="formRow">
+                <input type="text" id="waitTime" name="waitTime" placeholder="waittime in ms"><br>
+            </div>
+
+
+        </div>
+        <div class="formRowRepeatingSection">
+                
+                <input type="button" class="btn btn-info addFight" value="Add Block" />
+            </div>
+        <div class="formRow">
+            <input type="submit" class="btn btn-success" value="Save Route" />
+        </div>
+        <a href="#" class="buttonGray buttonRight deleteBlock">Delete</a>
+    </form>
+
 </body>
 
 <script>
+    var socket = io.connect("192.168.1.106:3000", {transports: ['websocket']})
+
+    $('#addOptions').click(function () {
+        console.log("ghh")
+        $("#blockOptionsDiv").show();
+        
+    })
+    //Show or Hide wiat time Box
+    $('#blockOptions').change(function () {
+        var currentlySelected = $('#blockOptions option:selected').val();
+        if (currentlySelected === "wait") {
+            $("#waitTime").show();
+        }
+        else
+        {
+            $("#waitTime").hide();
+        }
+    });
+    ////
+
+    var attrs = ['for', 'id', 'name'];
+function resetAttributeNames(section) { 
+    var tags = section.find('input, label'), idx = section.index();
+    tags.each(function() {
+      var $this = $(this);
+      $.each(attrs, function(i, attr) {
+        var attr_val = $this.attr(attr);
+        if (attr_val) {
+            $this.attr(attr, attr_val.replace(/_\d+$/, '_'+(idx + 1)))
+        }
+      })
+    })
+}
+                   
+$('.addFight').click(function(e){
+        e.preventDefault();
+        var lastRepeatingGroup = $('.repeatingSection').last();
+        var cloned = lastRepeatingGroup.clone(true)  
+        cloned.insertAfter(lastRepeatingGroup);
+        resetAttributeNames(cloned)
+    });
+                    
+// Delete a repeating section
+$('.deleteBlock').click(function(e){
+        e.preventDefault();
+        var current_fight = $(this).parent('div');
+        var other_fights = current_fight.siblings('.repeatingSection');
+        if (other_fights.length === 0) {
+            alert("You should atleast have one block");
+            return;
+        }
+        current_fight.slideUp('slow', function() {
+            current_fight.remove();
+            
+            // reset fight indexes
+            other_fights.each(function() {
+               resetAttributeNames($(this)); 
+            })  
+            
+        })
+        
+            
+    });
+
+
+
+
+    ////
+
     $('#submit').click(function()
     {
         let auto1 = {
@@ -70,5 +157,12 @@
     }
     console.log(auto1)
     });
+
+    $("#saveData").on('click', function(){
+            
+
+            
+            socket.emit('saveJSON');
+        });
 
 </script>

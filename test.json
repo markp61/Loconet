@@ -5,31 +5,31 @@
             "id": 0,
             "block": "1",
             "actions": [
-                "Wait(5000)",
+                "wait(5000)",
                 "setDirection(slot,0)",
-                "setSpeed(slot,50)"
+                "setSpeed(slot,20)"
+                
             ]  
         },
         {
             "id": 1,
-            "block": "2",
+            "block": "3",
             "actions": [
-                "SlowDown",
                 "setSpeed(slot,0)",
-                "Wait(5000)",
+                "wait(5000)",
                 "setDirection(slot,32)",
-                "setSpeed(slot,50)"
+                "setSpeed(slot,20)"
             ]
         },
         {
             "id": 2,
             "block": "1",
             "actions": [
-                "SlowDown",
+                
                 "setSpeed(slot,0)",
-                "Wait(5000)",
+                "wait(5000)",
                 "setDirection(slot,0)",
-                "setSpeed(slot,50)"
+                "setSpeed(slot,20)"
             ]
         }
     ],
@@ -39,7 +39,7 @@
             "id": 0,
             "block": "1",
             "actions": [
-                "setSpeed"
+                "setSpeed(slot,50)"
             ]
         },
         {
