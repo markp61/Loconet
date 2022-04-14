@@ -8,8 +8,15 @@ const wait = (milliseconds) => {
     console.log("im Waiting.......")
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
-  
-  async function speedRamp(slot,speed,finalSpeed,slowDownTime,waitTime,newDirection,newSpeed)
+  async function doaWait() {
+        console.log("1st thing ... wait")
+        speedRamp(1,100,0,1000)
+        await wait(10000)
+        console.log("...wait over ... second thing")
+        saymyName("Rosco")
+
+  };  
+  function speedRamp(slot,speed,finalSpeed,slowDownTime,wait,newDirection,newSpeed)
   {
       let steps = 10;
       if(speed < finalSpeed)
@@ -21,8 +28,8 @@ const wait = (milliseconds) => {
          increment = (finalSpeed - speed)/ steps;
       }
       var loopCount = 1;
-
-      for (let i = 0; i < steps; i++) {
+      var interval = setInterval(function () {
+          if (loopCount <= steps) {
               console.log(loopCount + " " + speed);
               if(speed < finalSpeed)
               {
@@ -34,25 +41,16 @@ const wait = (milliseconds) => {
               }
               //setSpeed(slot,speed)
               loopCount++;
-              await wait(slowDownTime)
-              console.log("wait OVER")
           }
-          
+          else {
               speed = finalSpeed;
               console.log(loopCount + " " + speed);
               //setSpeed(slot,speed);
-              console.log("All done")
-              if(waitTime>0)
-              {
-                await wait(waitTime)
-              }
-              console.log(newDirection)
-              console.log(newSpeed)
-
-
+              clearInterval(interval);
               
-          
-   
+          }
+      }, slowDownTime);
   }
-speedRamp(1,100,0,100,10000,"FWD",50)
-saymyName("CALLIE")
+  doaWait()
+
+  saymyName("rubi")

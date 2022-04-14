@@ -733,10 +733,10 @@ function speedRamp(slot,speed,finalSpeed,slowDownTime,wait,newDirection,newSpeed
             speed = finalSpeed;
             console.log(loopCount + " " + speed);
             setSpeed(slot,speed);
+            wait(5000)
+            setDirection(slot,newDirection);
+            setSpeed(slot,newSpeed)
             clearInterval(interval);
-            
-            console.log("done....")
-            sayHello("Maya")
         }
     }, slowDownTime);
 }

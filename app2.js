@@ -491,7 +491,7 @@ async function checkAutomationRules(thisBlock,thisBlockState)
   //AUTO 2
   if(autoTwoOn == 1)
   {    
-    console.log(thisBlock)
+    //console.log(thisBlock)
     //in the blocks array, find the block in step 1 an if occupied all is good to start
     objIndex = blockList.findIndex((obj => obj.block == 1));
     if(blockList[objIndex].blockOccupied == 1)
@@ -556,8 +556,8 @@ async function testFunction(autoID,thisBlock,thisBlockState)
   //when a relevant sensor to the sequence is high fire the appropriate functions
   //in case once sequence has 2 bolocks the same with different things to do we'll
   //keep track of them by having a count on each block so that the lowest count ones applies
- console.log("This Block is "+ thisBlock + "thisBlockState is : " + thisBlockState )
- console.log("Blocks used in this sequence are : ")
+ //console.log("This Block is "+ thisBlock + "thisBlockState is : " + thisBlockState )
+ //console.log("Blocks used in this sequence are : ")
 
  const fs = require('fs');
  fs.readFile('./test.json', { encoding: 'utf8' }, function(err, data) {
@@ -581,8 +581,9 @@ async function testFunction(autoID,thisBlock,thisBlockState)
       var product = data[autoID][i];
       var blox = product.block
       var id = product.id
+      var startActionOnly = product.startActionOnly
       
-      bloxUsed.push({Block:blox,id})
+      bloxUsed.push({Block:blox,id,startActionOnly})
       console.log(autoID,id)
       if (bloxUsedCount.some(e => e.autoID === autoID && e.id ===id)) {
         //console.log("Already in Arry")
@@ -594,7 +595,7 @@ async function testFunction(autoID,thisBlock,thisBlockState)
         bloxUsedCount.push({autoID,id,Block:blox,Count:0}) 
       }
   }
-  console.log(bloxUsed)
+  //console.log(bloxUsed)
   console.log (bloxUsedCount)
 
 
@@ -620,43 +621,63 @@ async function testFunction(autoID,thisBlock,thisBlockState)
 
     let result = bloxUsedCount.filter(a => a.Block == thisBlock && a.autoID == autoID).sort((a, b) => a.Count - b.Count)
     .filter((item, index, array) => item.Count === array[0].Count);
+    actions = bloxUsed.findIndex((a => a.Block == thisBlock && a.id == result[0].id));
+    
+    console.log("jjkhhk")
+    console.log("IS START ACTION ONLY " + bloxUsed[actions].startActionOnly)
+    console.log("COUNT IS  " + bloxUsedCount[objIndex].Count)
     console.log(result[0]);
-    console.log(bloxUsed)
+    if(bloxUsed[actions].startActionOnly ==="Yes" && bloxUsedCount[objIndex].Count != 0)
+    {
+        //THIS SHOULD GET ID 2////
+        let result = bloxUsedCount.filter(a => a.Block == thisBlock && a.autoID == autoID).sort((a,b) => b.id - a.id)
+        .filter((item, index, array) => item.Count === array[0].Count);
+        actions = bloxUsed.findIndex((a => a.Block == thisBlock && a.id == result[0].id));
+        console.log("!!!!!!!!!!!!!!!!!!!GET A NEW RESULT SET")
+        console.log(result[0]);
+    }
+    //console.log(bloxUsed)
     //objIndex = bloxUsed.findIndex(e => e.autoID === result[0].autoID && e.id ===result[0].id && e.Block=== result[0].Block);
 
  
-    console.log(result[0].id)
+    //console.log(result[0].id)
  
-    actions = bloxUsed.findIndex((a => a.Block == thisBlock && a.id == result[0].id));
-    console.log("ACTION IS " + actions)
-    console.log(actions)
+   
+   
+    //console.log("ACTION IS " + actions)
+
  
     var bbb =  data[autoID][actions]
-    console.log(bbb)
+    //console.log(bbb)
+
     console.log(bbb.actions.length + " Actions for this Block : ")
     loop()
-
+    //console.log("********************COUNTERY " + bloxUsedCount[objIndex].id + " Count " + bloxUsedCount[objIndex].Count)
     async function loop()
         {
         for (let i = 0; i < bbb.actions.length; i++) {
-            //console.log(bbb.actions[i]);
+            
             await wait(500)
             var cmdToSend =  bbb.actions[i].replace("slot",thisSlot)
             console.log(cmdToSend)
             //send Loconet Command
 
-              eval(cmdToSend)
+            //if Starting Block ONLY send once
+
+                eval(cmdToSend)
+
+             
 
 
         }
-        console.log(blox)
+        //console.log(blox)
         objIndex = bloxUsedCount.findIndex((obj => obj.autoID == autoID && obj.Block == thisBlock && obj.id == result[0].id));
-        console.log(bloxUsedCount)
-        console.log(result)
+        //console.log(bloxUsedCount)
+        //console.log(result)
       
         console.log("TEST: " + objIndex + "" +autoID +" "+blox + " "+ result[0].id)
         bloxUsedCount[objIndex].Count ++
-        console.log(bloxUsedCount)
+
     }
   }
   else{
@@ -667,7 +688,7 @@ async function testFunction(autoID,thisBlock,thisBlockState)
 
 function sayHello(name)
 {
-  console.log("HELLO!" + name)
+  console.log("*********************************HELLO!" + name)
 }
 //set Speed
 function setSpeed(slot,speed)
@@ -703,42 +724,60 @@ function setDirection(slot,direction)
 }
 
 //SpeedRamp
-function speedRamp(slot,speed,finalSpeed,slowDownTime,wait,newDirection,newSpeed)
+async function speedRamp(slot,speed,finalSpeed,slowDownTime,waitTime,newDirection,newSpeed)
 {
-    let steps = 10;
-    if(speed < finalSpeed)
+    if(speed != finalSpeed)
     {
-       increment = (speed - finalSpeed)/ steps;
-    }
-    else
-    {
-       increment = (finalSpeed - speed)/ steps;
-    }
-    var loopCount = 1;
-    var interval = setInterval(function () {
-        if (loopCount <= steps) {
-            console.log(loopCount + " " + speed);
+        console.log("NOT EQUAL ! Speed is " + speed +" finalSpeed is "+finalSpeed)
+            let steps = 10;
             if(speed < finalSpeed)
             {
-              speed = Math.round((speed - increment));
+            increment = (speed - finalSpeed)/ steps;
             }
             else
             {
-              speed = Math.round((speed + increment));
+            increment = (finalSpeed - speed)/ steps;
             }
-            setSpeed(slot,speed)
-            loopCount++;
-        }
-        else {
+            var loopCount = 1;
+
+            for (let i = 0; i < steps; i++) {
+                    console.log(loopCount + " " + speed);
+                    if(speed < finalSpeed)
+                    {
+                    speed = Math.round((speed - increment));
+                    }
+                    else
+                    {
+                    speed = Math.round((speed + increment));
+                    }
+                    setSpeed(slot,speed)
+                    loopCount++;
+                    await wait(slowDownTime)
+                    
+            }
+                
             speed = finalSpeed;
             console.log(loopCount + " " + speed);
             setSpeed(slot,speed);
-            clearInterval(interval);
-            
-            console.log("done....")
-            sayHello("Maya")
-        }
-    }, slowDownTime);
+            console.log("All done")
+    }
+
+    if(waitTime >= 1)
+    {
+        await wait(waitTime)
+        console.log("********************DONE with waiting")
+        console.log(newDirection)
+        setDirection(slot,newDirection);
+        console.log(newSpeed)
+        setSpeed(slot,newSpeed);
+    }
+    else{
+        console.log(newDirection)
+        setDirection(slot,newDirection);
+        console.log(newSpeed)
+        setSpeed(slot,newSpeed);
+    }
+
 }
 
 
@@ -798,3 +837,4 @@ function chk (buffer)
 });
     }
 
+////////IGNORE SLOW DOWN IF FIRST ITTERATION???????/////////
